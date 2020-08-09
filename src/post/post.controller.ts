@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put, Delete, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, EditPostDto } from './dtos';
 
@@ -14,7 +14,7 @@ export class PostController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: number) {
+  async getById(@Param('id', ParseIntPipe) id: number) {
     const data = await this.postService.getById(id)
     return { data }
   }
