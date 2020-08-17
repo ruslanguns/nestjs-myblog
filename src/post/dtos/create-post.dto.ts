@@ -7,6 +7,7 @@ import {
 } from 'class-validator';
 import { EnumToString } from '../../helpers/enumToString';
 import { PostCategory } from '../enums';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePostDto {
   @IsString()
