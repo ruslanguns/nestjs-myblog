@@ -21,9 +21,11 @@ export class UserService {
     return await this.userRepository.find()
   }
   
-  async getOne(id: number) {
-    const user = await this.userRepository.findOne(id);
-    if (!user) throw new NotFoundException('User does not exists')
+  async getOne(id: number, userEntity?: User) {
+    const user = await this.userRepository.findOne(id)
+      .then(u => !userEntity ? u : !!u && userEntity.id === u.id ? u : null)
+    
+      if (!user) throw new NotFoundException('User does not exists or unauthorized')
 
     return user;
   }
@@ -39,14 +41,15 @@ export class UserService {
     return user;
   }
   
-  async editOne(id: number, dto: EditUserDto) {
-    const user = await this.getOne(id)   
+  async editOne(id: number, dto: EditUserDto, userEntity?: User) {
+    console.log(dto);
+    const user = await this.getOne(id, userEntity)   
     const editedUser = Object.assign(user, dto);
     return await this.userRepository.save(editedUser);
   }
   
-  async deleteOne(id: number) {
-    const user = await this.getOne(id);
+  async deleteOne(id: number, userEntity?: User) {
+    const user = await this.getOne(id, userEntity);
     return await this.userRepository.remove(user);
   }
 

@@ -1,9 +1,10 @@
-import { Controller, Post, Get, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard, JwtAuthGuard } from './guards';
+import { Controller, Post, Get, UseGuards, Body } from '@nestjs/common';
+import { LocalAuthGuard } from './guards';
 import { User, Auth } from 'src/common/decorators';
 import { User as UserEntity } from 'src/user/entities';
 import { AuthService } from './auth.service';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './dtos/login.dto';
 
 @ApiTags('Auth routes')
 @Controller('auth')
@@ -16,6 +17,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
+    @Body() loginDto: LoginDto,
     @User() user: UserEntity
   ) {
     const data = await this.authService.login(user);
