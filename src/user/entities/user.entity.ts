@@ -5,8 +5,10 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Entity,
+  OneToOne,
 } from 'typeorm';
 import { hash } from 'bcryptjs';
+import { Post } from 'src/post/entities';
 
 @Entity('users')
 export class User {
@@ -24,7 +26,10 @@ export class User {
 
   @Column({ type: 'varchar', length: 128, nullable: false, select: false })
   password: string;
-  
+
+  @Column({ type: 'simple-array' })
+  roles: string[];
+
   @Column({ type: 'bool', default: true })
   status: boolean;
 
@@ -39,4 +44,11 @@ export class User {
     }
     this.password = await hash(this.password, 10);
   }
+
+  @OneToOne(
+    _ => Post,
+    post => post.author,
+    { cascade: true },
+  )
+  posts: Post;
 }

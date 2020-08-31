@@ -26,7 +26,26 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a [Nest](https://github.com/nestjs/nest) repository resultant of the NestJS Crud + Login + Roles series of live coding vides of [Dominicode](https://www.youtube.com/channel/UC3QuZuJr2_EOUak8bWUd74A) - Youtube's channel.
+
+| Date   |      Title      |  Video Link |
+|----------|:-------------:|------:|
+| 16-08-2020 |  CRUD + TypeOrm + MySQL | https://www.youtube.com/watch?v=eL2tO9xPZLM&t |
+| 23-08-2020 |    CRUD Login JWT - Part 1   |   https://www.youtube.com/watch?v=lTmGLgtgjdM&t |
+| 30-08-2020 | CRUD Login JWT - Part 2 |    https://www.youtube.com/watch?v=kjr54SpV_eQ |
+
+## Content
+- NestJS Controller and Dependency Injection
+- TypeORM Integration with MySQL database
+- @nestjs/config package integration for Environment Variables handling
+- Secure password encryption with BcryptJs 
+- Authentication strategies with Passport
+- Custom Decorator and tips
+- nest-access-control integration for RBAC and ABAC introduction
+- Class validator with custom settings
+- On boot admin user generation
+- ETC.
+
 
 ## Installation
 
