@@ -1,13 +1,13 @@
-import { RolesBuilder } from "nest-access-control";
+import { RolesBuilder } from 'nest-access-control';
 
 export enum AppRoles {
   AUTHOR = 'AUTHOR',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 export enum AppResource {
   USER = 'USER',
-  POST = 'POST'
+  POST = 'POST',
 }
 
 export const roles: RolesBuilder = new RolesBuilder();
@@ -25,5 +25,4 @@ roles
   .extend(AppRoles.AUTHOR)
   .createAny([AppResource.USER])
   .updateAny([AppResource.POST, AppResource.USER])
-  .deleteAny([AppResource.POST, AppResource.USER])
-
+  .deleteAny([AppResource.POST, AppResource.USER]);

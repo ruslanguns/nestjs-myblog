@@ -29,7 +29,7 @@ export class User {
 
   @Column({ type: 'simple-array' })
   roles: string[];
-  
+
   @Column({ type: 'bool', default: true })
   status: boolean;
 
@@ -45,6 +45,10 @@ export class User {
     this.password = await hash(this.password, 10);
   }
 
-  @OneToOne(_ => Post, post => post.author, { cascade: true } )
+  @OneToOne(
+    _ => Post,
+    post => post.author,
+    { cascade: true },
+  )
   posts: Post;
 }

@@ -9,45 +9,34 @@ import { LoginDto } from './dtos/login.dto';
 @ApiTags('Auth routes')
 @Controller('auth')
 export class AuthController {
-
-  constructor(
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
-    @Body() loginDto: LoginDto,
-    @User() user: UserEntity
-  ) {
+  async login(@Body() loginDto: LoginDto, @User() user: UserEntity) {
     const data = await this.authService.login(user);
     return {
       message: 'Login exitoso',
-      data
-    }
+      data,
+    };
   }
 
   @Auth()
   @Get('profile')
-  profile(
-    @User() user: UserEntity
-  ) {
+  profile(@User() user: UserEntity) {
     return {
       message: 'Petición correcta',
-      user
-    }
+      user,
+    };
   }
 
   @Auth()
   @Get('refresh')
-  refreshToken(
-    @User() user: UserEntity
-  ) {
+  refreshToken(@User() user: UserEntity) {
     const data = this.authService.login(user);
     return {
       message: 'Refresh exitoso',
-      data
-    }
+      data,
+    };
   }
-
 }

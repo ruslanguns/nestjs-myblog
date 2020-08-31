@@ -23,8 +23,8 @@ export class PostController {
     private readonly postService: PostService,
     @InjectRolesBuilder()
     private readonly roleBuilder: RolesBuilder,
-    ) {}
-  
+  ) {}
+
   @Get()
   async getMany() {
     const data = await this.postService.getMany();
@@ -40,13 +40,10 @@ export class PostController {
   @Auth({
     resource: AppResource.POST,
     action: 'create',
-    possession: 'own'
+    possession: 'own',
   })
   @Post()
-  async createPost(
-    @Body() dto: CreatePostDto,
-    @User() author: UserEntity
-    ) {
+  async createPost(@Body() dto: CreatePostDto, @User() author: UserEntity) {
     const data = await this.postService.createOne(dto, author);
     return { message: 'Post created', data };
   }
@@ -54,53 +51,41 @@ export class PostController {
   @Auth({
     resource: AppResource.POST,
     action: 'update',
-    possession: 'own'
+    possession: 'own',
   })
   @Put(':id')
   async editOne(
-    @Param('id') id: number, @Body() dto: EditPostDto,
-    @User() author: UserEntity
+    @Param('id') id: number,
+    @Body() dto: EditPostDto,
+    @User() author: UserEntity,
   ) {
-
     let data;
 
     if (
-      this.roleBuilder
-        .can(author.roles)
-        .updateAny(AppResource.POST)
-        .granted
-      ) {
-      
+      this.roleBuilder.can(author.roles).updateAny(AppResource.POST).granted
+    ) {
       // Puede editar cualquier POST...
       data = await this.postService.editOne(id, dto);
-    
     } else {
-
       // Puede editar solo los propios...
       data = await this.postService.editOne(id, dto, author);
     }
-    
+
     return { message: 'Post edited', data };
   }
 
   @Auth({
     resource: AppResource.POST,
     action: 'delete',
-    possession: 'own'
+    possession: 'own',
   })
   @Delete(':id')
-  async deleteOne(
-    @Param('id') id: number,
-    @User() author: UserEntity
-  ) {
-
+  async deleteOne(@Param('id') id: number, @User() author: UserEntity) {
     let data;
 
-    if (this.roleBuilder
-        .can(author.roles)
-        .deleteAny(AppResource.POST)
-        .granted
-      ) {
+    if (
+      this.roleBuilder.can(author.roles).deleteAny(AppResource.POST).granted
+    ) {
       data = await this.postService.deleteOne(id);
     } else {
       data = await this.postService.deleteOne(id, author);

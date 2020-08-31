@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, EditUserDto, UserRegistrationDto } from './dtos';
 import { Auth, User } from 'src/common/decorators';
@@ -10,105 +18,84 @@ import { User as UserEntity } from './entities';
 @ApiTags('Users routes')
 @Controller('user')
 export class UserController {
-
   constructor(
     private readonly userService: UserService,
     @InjectRolesBuilder()
-    private readonly rolesBuilder: RolesBuilder
+    private readonly rolesBuilder: RolesBuilder,
   ) {}
 
   @Get()
   async getMany() {
     const data = await this.userService.getMany();
-    return { data }
+    return { data };
   }
 
   @Post('register')
-  async publicRegistration(
-    @Body() dto: UserRegistrationDto
-  ) {
+  async publicRegistration(@Body() dto: UserRegistrationDto) {
     const data = await this.userService.createOne({
-      ...dto, roles: [AppRoles.AUTHOR]
+      ...dto,
+      roles: [AppRoles.AUTHOR],
     });
-    return { message: 'User registered', data }
+    return { message: 'User registered', data };
   }
 
   @Get(':id')
-  async getOne(
-    @Param('id') id: number,
-  ) {
+  async getOne(@Param('id') id: number) {
     const data = await this.userService.getOne(id);
-    return { data }
+    return { data };
   }
 
   @Auth({
     possession: 'any',
     action: 'create',
-    resource: AppResource.USER
+    resource: AppResource.USER,
   })
   @Post()
-  async createOne(
-    @Body() dto: CreateUserDto
-  ) {
-    const data = await this.userService.createOne(dto)
-    return { message: 'User created', data }
+  async createOne(@Body() dto: CreateUserDto) {
+    const data = await this.userService.createOne(dto);
+    return { message: 'User created', data };
   }
 
   @Auth({
     possession: 'own',
     action: 'update',
-    resource: AppResource.USER
+    resource: AppResource.USER,
   })
   @Put(':id')
   async editOne(
     @Param('id') id: number,
     @Body() dto: EditUserDto,
-    @User() user: UserEntity
+    @User() user: UserEntity,
   ) {
-
     let data;
 
-    if(this.rolesBuilder
-        .can(user.roles)
-        .updateAny(AppResource.USER)
-        .granted
-    ) {
+    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.USER).granted) {
       // esto es un admin
-      data = await this.userService.editOne(id, dto)
+      data = await this.userService.editOne(id, dto);
     } else {
       // esto es un author
       const { roles, ...rest } = dto;
-      data = await this.userService.editOne(id, rest, user)
+      data = await this.userService.editOne(id, rest, user);
     }
-    return { message: 'User edited', data }
+    return { message: 'User edited', data };
   }
 
   @Auth({
     action: 'delete',
     possession: 'own',
-    resource: AppResource.USER
+    resource: AppResource.USER,
   })
   @Delete(':id')
-  async deleteOne(
-    @Param('id') id: number,
-    @User() user: UserEntity
-  ) {
-    
+  async deleteOne(@Param('id') id: number, @User() user: UserEntity) {
     let data;
 
-    if(this.rolesBuilder
-        .can(user.roles)
-        .updateAny(AppResource.USER)
-        .granted
-    ) {
+    if (this.rolesBuilder.can(user.roles).updateAny(AppResource.USER).granted) {
       // esto es un admin
-      data = await this.userService.deleteOne(id)
+      data = await this.userService.deleteOne(id);
     } else {
       // esto es un author
-      data = await this.userService.deleteOne(id, user)
+      data = await this.userService.deleteOne(id, user);
     }
-    return { message: 'User deleted', data }
+    return { message: 'User deleted', data };
   }
-
-
 }

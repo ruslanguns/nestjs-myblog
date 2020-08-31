@@ -18,14 +18,16 @@ export class PostService {
   }
 
   async getById(id: number, author?: User) {
-    const post = await this.postRepository.findOne(id)
-      .then(p => !author ? p : !!p && author.id === p.author.id ? p : null)
-    if (!post) throw new NotFoundException('Post does not exist or unauthorized');
+    const post = await this.postRepository
+      .findOne(id)
+      .then(p => (!author ? p : !!p && author.id === p.author.id ? p : null));
+    if (!post)
+      throw new NotFoundException('Post does not exist or unauthorized');
     return post;
   }
 
   async createOne(dto: CreatePostDto, author: User) {
-    const post = this.postRepository.create({...dto, author});
+    const post = this.postRepository.create({ ...dto, author });
     return await this.postRepository.save(post);
   }
 
