@@ -15,10 +15,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, default: '', nullable: true })
   name: string;
 
-  @Column({ name: 'last_name', type: 'varchar', length: 255 })
+  @Column({ name: 'last_name', type: 'varchar', length: 255, default: '', nullable: true  })
   lastName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })

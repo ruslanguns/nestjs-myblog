@@ -1,0 +1,29 @@
+version: '2'
+services:
+  db1:
+    container_name: db_production
+    image: mysql:5.6
+    volumes:
+      - "./data/.mysql-prod-data/db:/var/lib/mysql"
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myblog_db_prod
+      MYSQL_USER: myblog_user_prod
+      MYSQL_PASSWORD: myblog_password_prod
+
+  db2:
+    container_name: db_development
+    image: mysql:5.6
+    volumes:
+      - "./data/.mysql-dev-data/db:/var/lib/mysql"
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myblog_db
+      MYSQL_USER: myblog_user
+      MYSQL_PASSWORD: myblog_password
