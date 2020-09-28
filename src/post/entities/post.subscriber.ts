@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
 import { MyLogger } from "src/logger/my-logger.service";
 import { Connection, EntitySubscriberInterface, EventSubscriber, InsertEvent } from "typeorm";
 import { Post } from "./post.entity";
 
-@Injectable()
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface<Post> {
 
