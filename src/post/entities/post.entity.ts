@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import { User } from 'src/user/entities';
 
@@ -34,8 +35,11 @@ export class Post {
   @Column({ type: 'bool', default: true })
   status: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
+
+  // @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  // updatedAt: Date;
 
   @ManyToOne(
    () => User,
