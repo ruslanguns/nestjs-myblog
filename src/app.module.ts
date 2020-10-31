@@ -9,10 +9,8 @@ import { AppService } from './app.service';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import {
-  TYPEORM_CONFIG
-} from './config/constants';
 import { roles } from './app.roles';
+import { TYPEORM_CONFIG } from './config/constants';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -24,13 +22,13 @@ import databaseConfig from './config/database.config';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,      
+      load: [databaseConfig],
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`, // .env.development
       validationSchema: Joi.object({ 
         NODE_ENV: Joi.string()
           .valid('development', 'production')
           .default('development')
       }),
-      load: [databaseConfig]
     }),
     AccessControlModule.forRoles(roles),
     AuthModule,

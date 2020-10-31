@@ -33,6 +33,7 @@ This is a [Nest](https://github.com/nestjs/nest) repository resultant of the Nes
 | 16-08-2020 |  CRUD + TypeOrm + MySQL | https://www.youtube.com/watch?v=eL2tO9xPZLM&t |
 | 23-08-2020 |    CRUD Login JWT - Part 1   |   https://www.youtube.com/watch?v=lTmGLgtgjdM&t |
 | 30-08-2020 | CRUD Login JWT - Part 2 |    https://www.youtube.com/watch?v=kjr54SpV_eQ |
+| 31-09-2020 | Deploy de NestJS con migraciones en TypeORM en Heroku |    https://youtu.be/P2gvIQRXIuc |
 
 ## Content
 - NestJS Controller and Dependency Injection
