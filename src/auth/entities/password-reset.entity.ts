@@ -11,8 +11,8 @@ export class PasswordResetEntity {
   @JoinColumn({name: 'user_id'})
   user: User;
 
-  @Column({ name: 'password_recovery_pin', type: 'int'})
-  passwordRecoveryPin: number;
+  @Column({ type: 'int'})
+  pin: number;
 
   @Column({ type: 'bool', default: false, nullable: true })
   used: boolean;

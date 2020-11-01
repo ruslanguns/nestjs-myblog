@@ -53,7 +53,7 @@ export class AuthService {
 
     const passwordRecoveryPin = generateRandomNumber(1000, 9999);
     const passwordDbEntry = this.passwordResetRepository.create({
-      passwordRecoveryPin,
+      pin: passwordRecoveryPin,
       user,
     });
     const token = this.jwtService.sign(
@@ -62,7 +62,7 @@ export class AuthService {
     );
 
     await this.passwordResetRepository.save(passwordDbEntry);
-    await this.sendForgetPasswordEmail(user, token);
+    this.sendForgetPasswordEmail(user, token); 
 
     return {
       message: 'Email with password recovery instruction sent',
@@ -78,11 +78,8 @@ export class AuthService {
     const { passwordRecoveryPin } = this.jwtService.decode(token) as IJwtPayload;
     const passwordRecoveryEntry = await this.passwordResetRepository.findOne({
       where: {
-        passwordRecoveryPin: Equal(passwordRecoveryPin),
+        pin: Equal(passwordRecoveryPin),
         used: false,
-      },
-      order: {
-        createdAt: 'ASC',
       },
       relations: ['user'],
     });
