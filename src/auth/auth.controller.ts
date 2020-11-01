@@ -1,10 +1,11 @@
-import { Controller, Post, Get, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, Body, Patch } from '@nestjs/common';
 import { LocalAuthGuard } from './guards';
 import { User, Auth } from 'src/common/decorators';
 import { User as UserEntity } from 'src/user/entities';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
+import { ForgetPasswordDto, ResetPasswordDto } from './dtos';
 
 @ApiTags('Auth routes')
 @Controller('auth')
@@ -38,5 +39,18 @@ export class AuthController {
       message: 'Refresh exitoso',
       data,
     };
+  }
+
+  
+  @Post('forget')
+  async forgetPassword(@Body() dto: ForgetPasswordDto) {
+    return await this.authService.forget(dto);
+  }
+
+  @Patch('reset')
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ) {
+    return await this.authService.reset(dto);
   }
 }

@@ -1,20 +1,30 @@
 import { registerAs } from '@nestjs/config';
 import { MailerOptions } from '@nestjs-modules/mailer';
+import * as nodemailer from 'nodemailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+
+// export const gmailTransporter = nodemailer.createTransport(
+//   {
+//     service: 'gmail',
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   },
+//   console.log(process.env.NODE_ENV),
+// );
 
 const mailerModuleOptions = (): MailerOptions => {
   return {
     transport: {
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: false,
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     },
     defaults: {
-      from: `"${process.env.EMAIL_DEFAULT_FROM_NAME}" <${process.env.EMAIL_DEFAULT_FROM_EMAIL}>`
+      from: `"${process.env.EMAIL_DEFAULT_FROM_NAME}" <${process.env.EMAIL_FROM_EMAIL}>`,
     },
     template: {
       dir: process.cwd() + '/template/layouts',
@@ -25,8 +35,8 @@ const mailerModuleOptions = (): MailerOptions => {
           extname: '.hbs',
           partialsDir: process.cwd() + '/template/partials',
           defaultLayout: 'base',
-          layoutsDir: process.cwd() + '/template/layouts'
-        }
+          layoutsDir: process.cwd() + '/template/layouts',
+        },
       },
     },
     options: {
@@ -38,10 +48,10 @@ const mailerModuleOptions = (): MailerOptions => {
         defaultLayout: 'base',
       },
       defaultLayout: 'base',
-    }
+    },
   };
-}
+};
 
 export default registerAs('mailer', () => ({
-  config: mailerModuleOptions()
+  config: mailerModuleOptions(),
 }));
