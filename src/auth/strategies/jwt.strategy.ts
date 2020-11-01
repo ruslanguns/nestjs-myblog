@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { JWT_SECRET } from 'src/config/constants';
@@ -17,6 +17,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const { sub: id } = payload;
+    if (payload.hasOwnProperty('passwordRecoveryPin')) {
+      throw new NotAcceptableException('Jwt token is invalid.')
+    }
     return await this.userService.getOne(id);
   }
 }
