@@ -1,4 +1,9 @@
-import { BadGatewayException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -15,7 +20,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userService.findOne({ email });
@@ -40,50 +45,52 @@ export class AuthService {
     const user = await this.userService.findOne({ email });
     if (!user) throw new NotFoundException('This account does not exist');
 
-    const token = this.jwtService.sign({sub: user.id}, {expiresIn: '5m'});
+    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '5m' });
     this.sendForgetPasswordEmail(user, token);
     return {
       message: 'Email with password recovery instruction sent',
-      data: null
-    }
+      data: null,
+    };
   }
 
-  async reset({password, token}: ResetPasswordDto) {
-    await this.jwtService.verifyAsync(token)
-      .catch(({message}) => {
-        throw new UnauthorizedException({message, data: null});
-      });
+  async reset({ password, token }: ResetPasswordDto) {
+    await this.jwtService.verifyAsync(token).catch(({ message }) => {
+      throw new UnauthorizedException({ message, data: null });
+    });
 
-    const {sub: id } = this.jwtService.decode(token) as IJwtPayload;
+    const { sub: id } = this.jwtService.decode(token) as IJwtPayload;
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
-    const user = await this.userService.findOne({id});
-    
+    const user = await this.userService.findOne({ id });
+
     if (!user) throw new NotFoundException('This account does not exist');
-    
+
     await queryRunner.connect();
-    
+
     try {
       const userEdited = Object.assign(user, { password });
       await queryRunner.manager.save(userEdited);
-    } catch(err) {
+    } catch (err) {
       await queryRunner.rollbackTransaction();
       throw new BadGatewayException({
         message: 'There are issues saving your new password',
-        data: null
+        data: null,
       });
     } finally {
       await queryRunner.release();
       return {
         message: 'Password has been changed successfuly',
         data: {
-          accessToken: this.jwtService.sign({ sub: user.id })
-        }
-      }
+          accessToken: this.jwtService.sign({ sub: user.id }),
+        },
+      };
     }
   }
 
-  async sendForgetPasswordEmail({email: to, name, lastName}: Partial<User>, token: string) {
+  async sendForgetPasswordEmail(
+    { email: to, name, lastName }: Partial<User>,
+    token: string,
+  ) {
     const template = 'reset-password-notification';
     const now = moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
     const context = { name, lastName, now, token };
@@ -91,7 +98,7 @@ export class AuthService {
       to,
       subject: `Reset password notification - [${now}]`,
       context,
-      template
+      template,
     });
   }
 }

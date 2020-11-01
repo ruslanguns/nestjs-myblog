@@ -6,6 +6,7 @@ import {
   BeforeUpdate,
   Entity,
   OneToOne,
+  UpdateDateColumn,
 } from 'typeorm';
 import { hash } from 'bcryptjs';
 import { Post } from 'src/post/entities';
@@ -35,6 +36,9 @@ export class User {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp'})
+  updatedAt: Date;
 
   @BeforeInsert()
   @BeforeUpdate()
