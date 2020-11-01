@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -58,6 +58,7 @@ export class AuthService {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     const user = await this.userService.findOne({id});
+    
     if (!user) throw new NotFoundException('This account does not exist');
     
     await queryRunner.connect();
@@ -67,14 +68,17 @@ export class AuthService {
       await queryRunner.manager.save(userEdited);
     } catch(err) {
       await queryRunner.rollbackTransaction();
+      throw new BadGatewayException({
+        message: 'There are issues saving your new password',
+        data: null
+      });
     } finally {
       await queryRunner.release();
-    }
-
-    return {
-      message: 'Password has been changed successfuly',
-      data: {
-        accessToken: this.jwtService.sign({ sub: user.id })
+      return {
+        message: 'Password has been changed successfuly',
+        data: {
+          accessToken: this.jwtService.sign({ sub: user.id })
+        }
       }
     }
   }
