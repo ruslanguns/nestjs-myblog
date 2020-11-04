@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { BadGatewayException, Logger, ValidationPipe } from '@nestjs/common';
+import * as helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { initSwagger } from './app.swagger';
@@ -20,6 +21,24 @@ async function bootstrap() {
   initSwagger(app); // ¿Queremos implementar Swagger solo en desarrollo o no?
   setDefaultUser(config);
   generateTypeormConfigFile(config);
+
+  // Enable CORS to specific whilelist of allowed domains
+  // const allowedDomains = [
+  //   'http://localhost:4200'
+  // ]
+  app.enableCors({
+    credentials: true,
+    // if you enable whitelist uncomment the following commented lines
+    // origin: (origin, cb) => {
+    //   (allowedDomains.indexOf(origin) !== -1)
+    //     ? cb(null, true)
+    //     : cb(new BadGatewayException('Not allowd by CORS'))
+    // },
+    origin: '*', // if you enable whitelist comment or delete this line
+    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+  });
+
+  app.use(helmet());
 
   app.useGlobalPipes(
     new ValidationPipe({
