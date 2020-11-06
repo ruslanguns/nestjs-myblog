@@ -10,7 +10,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcryptjs';
 import * as moment from 'moment';
-import { Equal, getConnection, Repository } from 'typeorm';
+import { Equal, getConnection, Raw, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { User } from 'src/user/entities';
 import { ForgetPasswordDto, ResetPasswordDto } from './dtos';
@@ -18,6 +18,7 @@ import { IJwtPayload } from '../common/interfaces';
 import { generateRandomNumber } from 'src/common/helpers/generate-random-number.helper';
 import { PasswordResetEntity } from './entities/password-reset.entity';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
+import { RevokeSessionDto } from './dtos/revoke-session.dto';
 
 @Injectable()
 export class AuthService {
@@ -64,14 +65,27 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: RefreshTokenEntity) {
-    const refreshTokenEdited = Object.assign(refreshToken, {
-      expirationTime: moment().toDate(),
-    });
-    await this.refreshTokenRepository.save(refreshTokenEdited);
+  async logout({id: sessionId}: RefreshTokenEntity) {
+    await this.revokeSession({ sessionId });
     return;
   }
 
+  async getActiveSessions(user: User) {
+    return this.refreshTokenRepository.find({ where: {
+      user: Equal(user.id),
+      expirationTime: Raw(expirationDate => `${expirationDate} > NOW()`)
+    }},)
+  }
+
+  async revokeSession({ sessionId }: RevokeSessionDto) {
+    const refreshToken = await this.refreshTokenRepository.findOne(sessionId); 
+    const refreshTokenEdited = Object.assign(refreshToken, {
+      expirationTime: moment().toDate(),
+    });
+    return await this.refreshTokenRepository.save(refreshTokenEdited);
+  }
+
+  
   async forget({ email }: ForgetPasswordDto) {
     const user = await this.userService.findOne({ email });
     if (!user) throw new NotFoundException('This account does not exist');
@@ -93,10 +107,6 @@ export class AuthService {
       message: 'Email with password recovery instruction sent',
       data: null,
     };
-  }
-
-  async getActiveSessions(user: User) {
-    return this.refreshTokenRepository.find({user})
   }
 
   async reset({ password, token }: ResetPasswordDto) {

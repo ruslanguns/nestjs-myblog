@@ -9,6 +9,7 @@ import { ForgetPasswordDto, ResetPasswordDto } from './dtos';
 import { RefreshToken } from 'src/common/decorators/refresh-token.decorator';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
+import { RevokeSessionDto } from './dtos/revoke-session.dto';
 
 // TODO: Refresh token persistant
 @ApiTags('Auth routes')
@@ -35,8 +36,6 @@ export class AuthController {
     };
   }
 
-  // TODO: meter logica para revocar refreshToken (logout())
-  // TODO: meter logica para ver sesiones activas
   @Post('refresh')
   async refreshToken(
     @RefreshToken()
@@ -81,6 +80,19 @@ export class AuthController {
     return {
       message: 'Sesiones activas del usuario',
       data: await this.authService.getActiveSessions(user)
+    }
+  }
+
+  @Auth()
+  @Patch('revoke-session')
+  async revokeSession(
+    @Body() dto: RevokeSessionDto
+  ) {
+    // TODO: Crear uno para el role de admin, para que pueda ver la de todos los usuarios.
+    await this.authService.revokeSession(dto);
+    return {
+      message: 'Sessión revocada con éxito',
+      data: null
     }
   }
   
