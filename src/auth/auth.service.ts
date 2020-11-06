@@ -17,12 +17,15 @@ import { ForgetPasswordDto, ResetPasswordDto } from './dtos';
 import { IJwtPayload } from '../common/interfaces';
 import { generateRandomNumber } from 'src/common/helpers/generate-random-number.helper';
 import { PasswordResetEntity } from './entities/password-reset.entity';
+import { RefreshTokenEntity } from './entities/refresh-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(PasswordResetEntity)
     private readonly passwordResetRepository: Repository<PasswordResetEntity>,
+    @InjectRepository(RefreshTokenEntity)
+    private readonly refreshTokenRepository: Repository<RefreshTokenEntity>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
@@ -39,11 +42,23 @@ export class AuthService {
     return null;
   }
 
-  login(user: User) {
+  async login(user: User) {
+    const { id, ...rest } = user;
+    const createRefreshToken = this.refreshTokenRepository.create({user});
+    const { refreshToken } = await this.refreshTokenRepository.save(createRefreshToken);
+    return {
+      user,
+      accessToken: this.jwtService.sign({ sub: id }),
+      refreshToken
+    };
+  }
+
+  async refreshToken(user: User, refreshToken: string) {
     const { id, ...rest } = user;
     return {
       user,
       accessToken: this.jwtService.sign({ sub: id }),
+      refreshToken
     };
   }
 

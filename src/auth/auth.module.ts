@@ -10,6 +10,7 @@ import { UserModule } from 'src/user/user.module';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordResetEntity } from './entities/password-reset.entity';
+import { RefreshTokenEntity } from './entities/refresh-token.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { PasswordResetEntity } from './entities/password-reset.entity';
         signOptions: { expiresIn: '60m' },
       }),
     }),
-    TypeOrmModule.forFeature([PasswordResetEntity]),
+    TypeOrmModule.forFeature([PasswordResetEntity,RefreshTokenEntity]),
     UserModule,
   ],
   controllers: [AuthController],
