@@ -95,6 +95,10 @@ export class AuthService {
     };
   }
 
+  async getActiveSessions(user: User) {
+    return this.refreshTokenRepository.find({user})
+  }
+
   async reset({ password, token }: ResetPasswordDto) {
     await this.jwtService.verifyAsync(token).catch(() => {
       throw new UnauthorizedException(

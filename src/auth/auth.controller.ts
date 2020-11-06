@@ -72,6 +72,17 @@ export class AuthController {
     }
   }
 
+  @Auth()
+  @Get('sessions')
+  async getActiveSessions(
+    @User() user: UserEntity
+  ) {
+    // TODO: Crear uno para el role de admin, para que pueda ver la de todos los usuarios.
+    return {
+      message: 'Sesiones activas del usuario',
+      data: await this.authService.getActiveSessions(user)
+    }
+  }
   
   @Post('forget')
   async forgetPassword(@Body() dto: ForgetPasswordDto) {
