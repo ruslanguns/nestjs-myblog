@@ -44,12 +44,14 @@ export class AuthService {
 
   async login(user: User) {
     const { id, ...rest } = user;
-    const createRefreshToken = this.refreshTokenRepository.create({user});
-    const { refreshToken } = await this.refreshTokenRepository.save(createRefreshToken);
+    const createRefreshToken = this.refreshTokenRepository.create({ user });
+    const { refreshToken } = await this.refreshTokenRepository.save(
+      createRefreshToken,
+    );
     return {
       user,
       accessToken: this.jwtService.sign({ sub: id }),
-      refreshToken
+      refreshToken,
     };
   }
 
@@ -58,8 +60,16 @@ export class AuthService {
     return {
       user,
       accessToken: this.jwtService.sign({ sub: id }),
-      refreshToken
+      refreshToken,
     };
+  }
+
+  async logout(refreshToken: RefreshTokenEntity) {
+    const refreshTokenEdited = Object.assign(refreshToken, {
+      expirationTime: moment().toDate(),
+    });
+    await this.refreshTokenRepository.save(refreshTokenEdited);
+    return;
   }
 
   async forget({ email }: ForgetPasswordDto) {
@@ -77,7 +87,7 @@ export class AuthService {
     );
 
     await this.passwordResetRepository.save(passwordDbEntry);
-    this.sendForgetPasswordEmail(user, token); 
+    this.sendForgetPasswordEmail(user, token);
 
     return {
       message: 'Email with password recovery instruction sent',
@@ -87,10 +97,14 @@ export class AuthService {
 
   async reset({ password, token }: ResetPasswordDto) {
     await this.jwtService.verifyAsync(token).catch(() => {
-      throw new UnauthorizedException('Password reset token is invalid or has expired.');
+      throw new UnauthorizedException(
+        'Password reset token is invalid or has expired.',
+      );
     });
 
-    const { passwordRecoveryPin } = this.jwtService.decode(token) as IJwtPayload;
+    const { passwordRecoveryPin } = this.jwtService.decode(
+      token,
+    ) as IJwtPayload;
     const passwordRecoveryEntry = await this.passwordResetRepository.findOne({
       where: {
         pin: Equal(passwordRecoveryPin),
@@ -99,7 +113,7 @@ export class AuthService {
       relations: ['user'],
     });
 
-    if (!passwordRecoveryEntry) 
+    if (!passwordRecoveryEntry)
       throw new NotAcceptableException('Password reset token is already used.');
 
     const connection = getConnection();
@@ -107,18 +121,18 @@ export class AuthService {
     const { user } = passwordRecoveryEntry;
 
     await queryRunner.connect();
-    
+
     try {
       const userEdited = Object.assign(user, { password });
       const tokenUsed = Object.assign(passwordRecoveryEntry, { used: true });
 
       await queryRunner.manager.save(userEdited);
       await queryRunner.manager.save(tokenUsed);
-
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new BadGatewayException('There are issues saving your new password');
-
+      throw new BadGatewayException(
+        'There are issues saving your new password',
+      );
     } finally {
       await queryRunner.release();
 
