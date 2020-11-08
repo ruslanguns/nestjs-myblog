@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 
 import { Post } from './entities';
 import { CreatePostDto, EditPostDto } from './dtos';
@@ -24,6 +24,14 @@ export class PostService {
     if (!post)
       throw new NotFoundException('Post does not exist or unauthorized');
     return post;
+  }
+
+  async getPostsByUserId(userId: number) {
+    const author = await getRepository<User>(User).findOne(userId);
+    if (!author) throw new NotFoundException('User does not exist');
+
+    return await this.postRepository.find({ where : { author }})
+
   }
 
   async createOne(dto: CreatePostDto, author: User) {

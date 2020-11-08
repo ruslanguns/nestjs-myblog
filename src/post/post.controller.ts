@@ -25,7 +25,6 @@ export class PostController {
     private readonly roleBuilder: RolesBuilder,
   ) {}
 
-  @Auth()
   @Get()
   async getMany() {
     const data = await this.postService.getMany();
@@ -36,6 +35,14 @@ export class PostController {
   async getById(@Param('id', ParseIntPipe) id: number) {
     const data = await this.postService.getById(id);
     return { data };
+  }
+
+  @Get('author/:authorId')
+  async getPostsByUserId(
+    @Param('authorId', ParseIntPipe) authorId: number
+  ) {
+    const data = await this.postService.getPostsByUserId(authorId);
+    return { data }
   }
 
   @Auth({
