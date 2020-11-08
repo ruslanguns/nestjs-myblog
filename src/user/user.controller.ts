@@ -68,7 +68,6 @@ export class UserController {
     @User() user: UserEntity,
   ) {
     let data;
-
     if (this.rolesBuilder.can(user.roles).updateAny(AppResource.USER).granted) {
       // esto es un admin
       data = await this.userService.editOne(id, dto);

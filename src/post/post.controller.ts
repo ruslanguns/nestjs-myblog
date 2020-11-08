@@ -25,6 +25,7 @@ export class PostController {
     private readonly roleBuilder: RolesBuilder,
   ) {}
 
+  @Auth()
   @Get()
   async getMany() {
     const data = await this.postService.getMany();

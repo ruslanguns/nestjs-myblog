@@ -21,7 +21,7 @@ import { RefreshTokenEntity } from './entities/refresh-token.entity';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>(JWT_SECRET),
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '30s' },
       }),
     }),
     TypeOrmModule.forFeature([PasswordResetEntity,RefreshTokenEntity]),

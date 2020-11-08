@@ -11,12 +11,13 @@ import { getRepository } from 'typeorm';
 export const RefreshToken = createParamDecorator(
   async (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const refreshTokenReq = request.body.refreshToken.split('_');
+    const refreshTokenReq = request.body.refreshToken;
 
-    if (refreshTokenReq.length !== 2) throw new ForbiddenException('RefreshToken invalid format');
+    if (refreshTokenReq && refreshTokenReq.split('_').length !== 2)
+      throw new ForbiddenException('RefreshToken invalid format');
 
-    const refreshToken: string = refreshTokenReq[0];
-    const refreshTokenId: string = refreshTokenReq[1];
+    const refreshToken: string = refreshTokenReq.split('_')[0];
+    const refreshTokenId: string = refreshTokenReq.split('_')[1];
 
     return await getRepository<RefreshTokenEntity>(RefreshTokenEntity)
       .findOne(refreshTokenId, { relations: ['user'] })

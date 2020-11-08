@@ -35,7 +35,7 @@ async function bootstrap() {
     //     : cb(new BadGatewayException('Not allowd by CORS'))
     // },
     origin: '*', // if you enable whitelist comment or delete this line
-    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT']
   });
 
   app.use(helmet());
