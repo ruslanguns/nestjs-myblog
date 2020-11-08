@@ -19,6 +19,8 @@ import { generateRandomNumber } from 'src/common/helpers/generate-random-number.
 import { PasswordResetEntity } from './entities/password-reset.entity';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
 import { RevokeSessionDto } from './dtos/revoke-session.dto';
+import { ConfigService } from '@nestjs/config';
+import { CLIENT_HOST, CLIENT_RESET_PASSWORD_PATH } from 'src/config/constants';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +32,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -165,7 +168,9 @@ export class AuthService {
   ) {
     const template = 'reset-password-notification';
     const now = moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
-    const context = { name, lastName, now, token };
+    const clientUrl = this.configService.get<string>(CLIENT_HOST);
+    const clientResetPasswordPath = this.configService.get<string>(CLIENT_RESET_PASSWORD_PATH);
+    const context = { name, lastName, now, token, clientUrl, clientResetPasswordPath };
     return await this.mailerService.sendMail({
       to,
       subject: `Reset password notification - [${now}]`,

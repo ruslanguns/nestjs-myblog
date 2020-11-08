@@ -4,3 +4,5 @@ export const TYPEORM_CONFIG = 'database.config'
 export const DEFAULT_USER_EMAIL = 'DEFAULT_USER_EMAIL';
 export const DEFAULT_USER_PASSWORD = 'DEFAULT_USER_PASSWORD';
 export const CONFIG_MAILER_CONFIG = 'mailer.config';
+export const CLIENT_HOST = 'CLIENT_HOST';
+export const CLIENT_RESET_PASSWORD_PATH = 'CLIENT_RESET_PASSWORD_PATH';
