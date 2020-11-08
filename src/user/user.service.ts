@@ -35,7 +35,7 @@ export class UserService {
     return user;
   }
 
-  async createOne(dto: CreateUserDto) {
+  async createOne(dto: Partial<CreateUserDto>) {
     const userExist = await this.userRepository.findOne({ email: dto.email });
     if (userExist)
       throw new BadRequestException('User already registered with email');
